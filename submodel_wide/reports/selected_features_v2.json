@@ -1,1 +1,12 @@
-
+[
+  "era5_p1_tp",
+  "era5_p1_wind",
+  "era5_p2_tp",
+  "era5_p2_wind",
+  "era5_p3_tp",
+  "era5_p3_wind",
+  "era5_p4_tp",
+  "era5_p4_wind",
+  "era5_p5_tp",
+  "era5_p5_wind"
+]
