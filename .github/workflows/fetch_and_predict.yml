@@ -1,0 +1,86 @@
+name: Fetch Weather & Run Submodel Prediction
+
+on:
+  schedule:
+    # UTC時刻で3時間おき（0:00, 3:00, 6:00 ...）に自動実行
+    - cron: '0 */3 * * *'
+  workflow_dispatch: # 手動実行（テスト用）のボタンも用意
+
+jobs:
+  predict-pipeline:
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: write # ブランチへのコミット権限
+
+    steps:
+      # 1. main ブランチのコード・Configファイルを取得
+      - name: Checkout main branch
+        uses: actions/checkout@v4
+
+      # 2. Configで指定された Release タグからモデルコードを取得
+      # (jq コマンドで config.json から release_tag を自動抽出)
+      - name: Get Target Release Tag from Config
+        id: get_tag
+        run: |
+          TAG=$(jq -r '.model_config.release_tag' config.json)
+          echo "target_tag=$TAG" >> $GITHUB_OUTPUT
+
+      - name: Checkout Model Code from Release
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ steps.get_tag.outputs.target_tag }}
+          path: 'model_src'
+
+      # 3. 指定した Release の添付ファイル (.pkl) をダウンロード
+      - name: Get Model Filename from Config
+        id: get_model_file
+        run: |
+          FILE=$(jq -r '.model_config.model_filename' config.json)
+          echo "model_filename=$FILE" >> $GITHUB_OUTPUT
+
+      - name: Download Model Asset from Release
+        uses: dsaltares/fetch-gh-release-asset@master
+        with:
+          version: 'tags/${{ steps.get_tag.outputs.target_tag }}'
+          file: '${{ steps.get_model_file.outputs.model_filename }}'
+          target: 'model_src/models_saved/${{ steps.get_model_file.outputs.model_filename }}'
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      # 4. Python環境構築とライブラリ設定
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+
+      - name: Install Dependencies
+        run: |
+          python -m pip install --upgrade pip
+          if [ -f model_src/requirements.txt ]; then pip install -r model_src/requirements.txt; fi
+
+      # 5. 気象データ取得 & 推論スクリプトの実行
+      # (最新の気象データと推論結果を出力)
+      - name: Execute Pipeline Script
+        env:
+          OPENWEATHER_API_KEY: ${{ secrets.OPENWEATHER_API_KEY }}
+        run: |
+          python model_src/src/models/run_pipeline.py \
+            --config config.json \
+            --output_site site/latest_predictions.json \
+            --output_log logs/
+
+      # 6. 【main ブランチへ】最新の予測結果 (latest_predictions.json) のみ更新保存
+      - name: Deploy Latest Prediction to main
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: "chore: update latest weather prediction [skip ci]"
+          file_pattern: "site/latest_predictions.json"
+
+      # 7. 【archive ブランチへ】日付別予測ログの蓄積保存
+      - name: Archive Daily Log to archive branch
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_branch: archive
+          publish_dir: ./logs
+          keep_files: true # 過去ログを消さずに蓄積
