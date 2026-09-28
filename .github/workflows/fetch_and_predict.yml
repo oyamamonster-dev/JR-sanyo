@@ -23,7 +23,7 @@ jobs:
       - name: Get Target Release Tag from Config
         id: get_tag
         run: |
-          TAG=$(jq -r '.model_config.release_tag' config.json)
+          TAG=$(jq -r '.active_models[0].release_tag' config/config.json)
           echo "target_tag=$TAG" >> $GITHUB_OUTPUT
 
       - name: Checkout Model Code from Release
