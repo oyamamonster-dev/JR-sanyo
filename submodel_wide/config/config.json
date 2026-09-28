@@ -1,16 +1,34 @@
 {
   "weather_stations": [
     {
-      "station_id": "hiroshima_city",
-      "name": "広島市",
-      "latitude": 34.3963,
-      "longitude": 132.4594
+      "station_id": "era5_1_kyushu_northwest",
+      "name": "九州北西沖・対馬海峡",
+      "latitude": 34.0,
+      "longitude": 130.0
     },
     {
-      "station_id": "miyajima_guchi",
-      "name": "宮島口沿線",
-      "latitude": 34.3125,
-      "longitude": 132.3022
+      "station_id": "era5_2_seto_inland",
+      "name": "瀬戸内海・広島東部〜岡山県境",
+      "latitude": 34.5,
+      "longitude": 132.5
+    },
+    {
+      "station_id": "era5_3_shikoku_offshore",
+      "name": "四国沖・太平洋",
+      "latitude": 31.5,
+      "longitude": 133.0
+    },
+    {
+      "station_id": "era5_4_china_inland",
+      "name": "中国大陸内陸部",
+      "latitude": 27.0,
+      "longitude": 110.0
+    },
+    {
+      "station_id": "era5_5_china_east",
+      "name": "中国大陸東部",
+      "latitude": 32.5,
+      "longitude": 115.0
     }
   ],
   "active_models": [
@@ -19,7 +37,13 @@
       "display_name": "広域気象モデル (WideWeather)",
       "release_tag": "v1.0-submodel2",
       "model_filename": "submodel_v2_lgbm.pkl",
-      "required_stations": ["hiroshima_city", "miyajima_guchi"],
+      "required_stations": [
+        "era5_1_kyushu_northwest",
+        "era5_2_seto_inland",
+        "era5_3_shikoku_offshore",
+        "era5_4_china_inland",
+        "era5_5_china_east"
+      ],
       "output_filename": "submodel_v2.json"
     }
   ]
