@@ -1,32 +1,44 @@
 {
   "weather_stations": [
     {
-      "station_id": "hiroshima_city",
-      "name": "広島市",
-      "latitude": 34.3963,
-      "longitude": 132.4594
+      "station_id": "era5_p1",
+      "name": "1. 九州北西沖・対馬海峡",
+      "latitude": 34.0,
+      "longitude": 130.0
     },
     {
-      "station_id": "miyajima_guchi",
-      "name": "宮島口沿線",
-      "latitude": 34.3125,
-      "longitude": 132.3022
+      "station_id": "era5_p2",
+      "name": "2. 瀬戸内海・広島東部〜岡山県境",
+      "latitude": 34.5,
+      "longitude": 132.5
+    },
+    {
+      "station_id": "era5_p3",
+      "name": "3. 四国沖・太平洋",
+      "latitude": 31.5,
+      "longitude": 133.0
+    },
+    {
+      "station_id": "era5_p4",
+      "name": "4. 中国大陸内陸部",
+      "latitude": 27.0,
+      "longitude": 110.0
+    },
+    {
+      "station_id": "era5_p5",
+      "name": "5. 中国大陸東部",
+      "latitude": 32.5,
+      "longitude": 115.0
     }
   ],
   "active_models": [
     {
-      "model_id": "submodel_v1_lgbm",
-      "release_tag": "v1.0-submodel",
-      "model_filename": "submodel_v1.0.pkl",
-      "required_stations": ["hiroshima_city"],
-      "output_filename": "submodel_v1_lgbm.json"
-    },
-    {
-      "model_id": "submodel_v2_rf",
-      "release_tag": "v2.0-submodel",
-      "model_filename": "submodel_v2.0.pkl",
-      "required_stations": ["hiroshima_city", "miyajima_guchi"],
-      "output_filename": "submodel_v2_rf.json"
+      "model_id": "submodel_v2",
+      "display_name": "広域気象モデル (WideWeather)",
+      "release_tag": "v1.0-submodel2",
+      "model_filename": "submodel_v2_lgbm.pkl",
+      "required_stations": ["era5_p1", "era5_p2", "era5_p3", "era5_p4", "era5_p5"],
+      "output_filename": "submodel_v2.json"
     }
   ]
 }
